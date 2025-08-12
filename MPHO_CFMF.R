@@ -389,6 +389,79 @@ select_order_fitness2 <- function(fit_vector){
 
 
 
+#####################PRAD
+M2 <- read.csv("E:/dz/pathway/data/prad/PRAD_M2.csv")
+rownames(M2) <- M2[,1]
+M2 <- M2[,-1]
+net_gene <- colnames(M2)
+
+M <- M2
+M <- as.matrix(M)
+
+adj_matrix <- matrix(0,nrow = length(net_gene),ncol = length(net_gene))
+rownames(adj_matrix) <- net_gene
+colnames(adj_matrix) <- net_gene
+for (i in 1:nrow(M)) {
+  gene1_neib <- which(M[i,]!=0)
+  adj_matrix[i,gene1_neib] <- 1
+  
+}
+sum(adj_matrix)
+G_mut <- read.csv("E:/dz/pathway/data/prad/prad_mutation.csv")
+rownames(G_mut) <- G_mut[,1]
+G_mut<-G_mut[,-1]
+total_gene <- net_gene
+
+
+
+###############GBM
+M2 <- read.csv("E:/dz/pathway/data/gbm/GBM_M2.csv")
+rownames(M2) <- M2[,1]
+M2 <- M2[,-1]
+net_gene <- colnames(M2)
+M <- M2
+M <- as.matrix(M)
+adj_matrix <- matrix(0,nrow = length(net_gene),ncol = length(net_gene))
+rownames(adj_matrix) <- net_gene
+colnames(adj_matrix) <- net_gene
+for (i in 1:nrow(M)) {
+  gene1_neib <- which(M[i,]!=0)
+  adj_matrix[i,gene1_neib] <- 1
+  
+}
+sum(adj_matrix)
+G_mut <- read.csv('E:/dz/pathway/data/gbm/SNVdata_440.csv')
+rownames(G_mut) <- G_mut[,1]
+G_mut<-G_mut[,-1]
+total_gene <- net_gene
+
+###########################OV
+M2 <- read.csv("E:/dz/pathway/data/ov/OV_M2.csv")
+rownames(M2) <- M2[,1]
+M2 <- M2[,-1]
+net_gene <- colnames(M2)
+M <- M2
+M <- as.matrix(M)
+ 
+adj_matrix <- matrix(0,nrow = length(net_gene),ncol = length(net_gene))
+rownames(adj_matrix) <- net_gene
+colnames(adj_matrix) <- net_gene
+for (i in 1:nrow(M)) {
+  gene1_neib <- which(M[i,]!=0)
+  adj_matrix[i,gene1_neib] <- 1
+  
+}
+sum(adj_matrix)
+G_mut <- read.csv('E:/dz/pathway/data/ov/OVCA_SNVdata_2547.csv')
+rownames(G_mut) <- G_mut[,1]
+G_mut<-G_mut[,-1]
+total_gene <- net_gene
+
+
+
+
+
+
 
 geneName <- total_gene
 
@@ -405,9 +478,20 @@ md_matrix[2,] <- colSums(mut_mtrix)
 ol <- order(md_matrix[2,],decreasing = T)
 md_matrix[1,] <- 1:ncol(mut_mtrix)
 md_matrix <- md_matrix[,ol]
+
+initial_gene <- matrix(0,nrow(adj_matrix),3)
+initial_gene[,1] <- total_gene
+for (i in 1:nrow(initial_gene)) {
+  initial_gene[i,2] <- length(which(adj_matrix[i,]!=0))
+}
+
+write.csv(initial_gene,"initial_gene.csv")
+
 result_gene <- read.csv("initial_gene.csv")
+result_gene <- result_gene[order(result_gene[,3],decreasing = 'T'),]
 initial_gene <- result_gene[1:200,2]
 G_mut <- as.matrix(G_mut)
+
 
 
 
@@ -651,4 +735,5 @@ for (K in 2:7) {
 
 
 stopCluster(cl)
+
 
